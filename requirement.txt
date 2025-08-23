@@ -1,8 +1,6 @@
-Streamlit
-Numpy
-Matplotlib
+streamlit
+numpy
 pandas
-xgboost
-lightgbm
-catboost
 scikit-learn
+joblib
+plotly
