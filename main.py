@@ -4,20 +4,14 @@ import matplotlib.pyplot as plt
 import joblib
 
 # ----------------------
-# Load model (replace with your trained model .pkl if available)
+# Load trained model
 # ----------------------
-# Example: model = joblib.load("heart_model.pkl")
-# For demo, we use random prediction
-class DummyModel:
-    def predict_proba(self, X):
-        return np.array([[0.3, 0.7]])  # 70% chance of disease (demo)
-
-model = DummyModel()
+model = joblib.load("heart_model.pkl")
 
 # ----------------------
 # Streamlit UI
 # ----------------------
-st.set_page_config(page_title="❤️ Health Disease Prediction", layout="wide")
+st.set_page_config(page_title="❤️ Heart Disease Prediction", layout="wide")
 st.title("❤️ Heart Disease Prediction App")
 st.markdown("Fill in the details below to predict the **chance of heart disease**.")
 
@@ -42,10 +36,11 @@ with col2:
         "Resting ECG Results",
         ["Normal", "ST-T wave abnormality", "Left ventricular hypertrophy"]
     )
-    thalach = st.number_input(" Max Heart Rate Achieved", min_value=60, max_value=220, value=150)
+    thalach = st.number_input("Heart Beat Rate Achieved", min_value=60, max_value=220, value=150)
     exang = st.selectbox("Exercise Induced Angina", ["Yes", "No"])
     oldpeak = st.number_input("Oldpeak (ST Depression)", min_value=0.0, max_value=10.0, value=1.0, step=0.1)
     slope = st.selectbox("ST Segment", ["Upsloping", "Flat", "Downsloping"])
+    ca = st.selectbox("Number of Major Vessels (0–3)", [0, 1, 2, 3])   # 👈 added here
     thal = st.selectbox("Thalassemia", ["Normal", "Fixed Defect", "Reversible Defect"])
 
 # ----------------------
@@ -67,18 +62,22 @@ exang_map = {"Yes": 1, "No": 0}
 slope_map = {"Upsloping": 0, "Flat": 1, "Downsloping": 2}
 thal_map = {"Normal": 1, "Fixed Defect": 2, "Reversible Defect": 3}
 
+# ----------------------
+# Feature vector (13 inputs now)
+# ----------------------
 features = np.array([[
     age,
     sex_map[sex],
     cp_map[chest_pain],
     trestbps,
     chol,
-    1 if fbs > 120 else 0,  # typical cutoff for fasting blood sugar
+    1 if fbs > 120 else 0,  # threshold encoding for fasting blood sugar
     restecg_map[restecg],
     thalach,
     exang_map[exang],
     oldpeak,
     slope_map[slope],
+    ca,                       # 👈 added to match trained model
     thal_map[thal]
 ]])
 
@@ -102,8 +101,10 @@ if st.button("🔍 Predict"):
     ax.set_ylabel("Probability (%)")
     ax.set_ylim(0, 100)
 
+    # Show chart
     st.pyplot(fig)
 
+    # Display messages
     if disease_prob > 50:
         st.error("⚠️ High chance of heart disease. Please consult a doctor.")
     else:
