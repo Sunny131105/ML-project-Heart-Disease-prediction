@@ -1,7 +1,8 @@
 import streamlit as st
 import numpy as np
-import matplotlib.pyplot as plt
+import pandas as pd
 import joblib
+import plotly.express as px  # ✅ for colored bars
 
 # ----------------------
 # Load trained model
@@ -40,24 +41,15 @@ with col2:
     exang = st.selectbox("Exercise Induced Angina", ["Yes", "No"])
     oldpeak = st.number_input("Oldpeak (ST Depression)", min_value=0.0, max_value=10.0, value=1.0, step=0.1)
     slope = st.selectbox("ST Segment", ["Upsloping", "Flat", "Downsloping"])
-    ca = st.selectbox("Number of Major Vessels (0–3)", [0, 1, 2, 3])   # 👈 added here
+    ca = st.selectbox("Number of Major Vessels (0–3)", [0, 1, 2, 3])
     thal = st.selectbox("Thalassemia", ["Normal", "Fixed Defect", "Reversible Defect"])
 
 # ----------------------
 # Encoding categorical variables
 # ----------------------
 sex_map = {"Male": 1, "Female": 0}
-cp_map = {
-    "Typical Angina": 0,
-    "Atypical Angina": 1,
-    "Non-anginal Pain": 2,
-    "Asymptomatic": 3
-}
-restecg_map = {
-    "Normal": 0,
-    "ST-T wave abnormality": 1,
-    "Left ventricular hypertrophy": 2
-}
+cp_map = {"Typical Angina": 0, "Atypical Angina": 1, "Non-anginal Pain": 2, "Asymptomatic": 3}
+restecg_map = {"Normal": 0, "ST-T wave abnormality": 1, "Left ventricular hypertrophy": 2}
 exang_map = {"Yes": 1, "No": 0}
 slope_map = {"Upsloping": 0, "Flat": 1, "Downsloping": 2}
 thal_map = {"Normal": 1, "Fixed Defect": 2, "Reversible Defect": 3}
@@ -71,13 +63,13 @@ features = np.array([[
     cp_map[chest_pain],
     trestbps,
     chol,
-    1 if fbs > 120 else 0,  # threshold encoding for fasting blood sugar
+    1 if fbs > 120 else 0,
     restecg_map[restecg],
     thalach,
     exang_map[exang],
     oldpeak,
     slope_map[slope],
-    ca,                       # 👈 added to match trained model
+    ca,
     thal_map[thal]
 ]])
 
@@ -93,19 +85,26 @@ if st.button("🔍 Predict"):
     st.write(f"**Chance of Heart Disease:** {disease_prob:.2f}%")
     st.write(f"**Chance of Being Healthy:** {healthy_prob:.2f}%")
 
-    # Matplotlib Bar Chart (3x3 inches)
-    fig, ax = plt.subplots(figsize=(3, 3))
-    categories = ["Healthy", "Disease"]
-    values = [healthy_prob, disease_prob]
-    ax.bar(categories, values, color=["green", "red"])
-    ax.set_ylabel("Probability (%)")
-    ax.set_ylim(0, 100)
+    # ✅ Plotly bar chart with custom colors
+    chart_data = pd.DataFrame({
+        "Category": ["Healthy", "Disease"],
+        "Probability (%)": [healthy_prob, disease_prob],
+        "Color": ["green", "red"]  # define colors
+    })
 
-    # Show chart
-    st.pyplot(fig)
+    fig = px.bar(
+        chart_data,
+        x="Category",
+        y="Probability (%)",
+        color="Color",   # use the color column
+        color_discrete_map={"green": "green", "red": "red"},
+        height=300
+    )
+    st.plotly_chart(fig, use_container_width=False)
 
     # Display messages
     if disease_prob > 50:
         st.error("⚠️ High chance of heart disease. Please consult a doctor.")
     else:
         st.success("✅ Low chance of heart disease. Keep maintaining a healthy lifestyle!")
+
