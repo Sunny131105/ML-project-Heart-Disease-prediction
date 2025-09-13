@@ -55,7 +55,7 @@ slope_map = {"Upsloping": 0, "Flat": 1, "Downsloping": 2}
 thal_map = {"Normal": 1, "Fixed Defect": 2, "Reversible Defect": 3}
 
 # ----------------------
-# Feature vector (13 inputs now)
+# Feature vector
 # ----------------------
 features = np.array([[
     age,
@@ -73,42 +73,42 @@ features = np.array([[
     thal_map[thal]
 ]])
 
-
 # ----------------------
 # Function to generate recommendations
 # ----------------------
-def get_recommendations(age, chol, trestbps, fbs, chest_pain, exang):
-    recommendations = {"Medicine": [], "Exercise": []}
+def get_recommendations(disease_prob, age, chol, trestbps, fbs, chest_pain, exang):
+    recs = {"Medicine": [], "Exercise": [], "Lifestyle": []}
 
-    # Blood Pressure related
-    if trestbps > 140:
-        recommendations["Medicine"].append("Blood pressure control medicines (e.g., ACE inhibitors, Beta-blockers)")
-        recommendations["Exercise"].append("Light yoga, daily walking (20–30 min), avoid heavy lifting")
+    # MODERATE RISK (30–50%)
+    if 30 <= disease_prob <= 50:
+        recs["Medicine"].append("Consider preventive medicines (consult doctor).")
+        if trestbps > 130:
+            recs["Medicine"].append("Mild BP control medication may be required.")
+        if chol > 220:
+            recs["Medicine"].append("Statins may be suggested for cholesterol control.")
+        recs["Exercise"].append("Aerobic activities like cycling, brisk walking, swimming.")
+        recs["Lifestyle"].append("Reduce salt, fried food, and sugary drinks.")
 
-    # Cholesterol related
-    if chol > 240:
-        recommendations["Medicine"].append("Statins to lower cholesterol")
-        recommendations["Exercise"].append("Aerobic exercise like brisk walking, cycling, swimming")
+    # HIGH RISK (>50%)
+    elif disease_prob > 50:
+        recs["Medicine"].append("Prescription medicines likely required (consult cardiologist).")
+        if trestbps > 140:
+            recs["Medicine"].append("Strong BP medicines (ACE inhibitors, Beta-blockers).")
+        if chol > 240:
+            recs["Medicine"].append("Statins for cholesterol lowering.")
+        if fbs > 120:
+            recs["Medicine"].append("Diabetes control medicines (e.g., Metformin).")
+        if chest_pain in ["Typical Angina", "Atypical Angina"]:
+            recs["Medicine"].append("Angina medicines (Nitroglycerin).")
 
-    # Diabetes risk (high fasting blood sugar)
-    if fbs > 120:
-        recommendations["Medicine"].append("Sugar control medicines (e.g., Metformin)")
-        recommendations["Exercise"].append("Daily 30 min brisk walk, strength training twice a week")
+        recs["Exercise"].append("Gentle walking, yoga, tai chi (avoid heavy exercise).")
+        if exang == "Yes":
+            recs["Exercise"].append("Avoid intense workouts, prefer breathing exercises.")
 
-    # Chest pain risk
-    if chest_pain in ["Typical Angina", "Atypical Angina"]:
-        recommendations["Medicine"].append("Nitroglycerin or other angina-relief medicines")
-        recommendations["Exercise"].append("Gentle exercises under medical supervision")
+        recs["Lifestyle"].append("Strict low-salt, low-oil diet with more fruits & vegetables.")
+        recs["Lifestyle"].append("Avoid smoking & alcohol. Regular checkups every 3–6 months.")
 
-    # Exercise induced angina
-    if exang == "Yes":
-        recommendations["Exercise"].append("Avoid intense workouts, prefer light walking and breathing exercises")
-
-    # Age-specific
-    if age > 60:
-        recommendations["Exercise"].append("Low impact exercises like tai chi, yoga, water aerobics")
-
-    return recommendations
+    return recs
 
 
 # ----------------------
@@ -123,7 +123,7 @@ if st.button("🔍 Predict"):
     st.write(f"**Chance of Heart Disease:** {disease_prob:.2f}%")
     st.write(f"**Chance of Being Healthy:** {healthy_prob:.2f}%")
 
-    # ✅ Plotly bar chart with custom colors
+    # ✅ Plotly bar chart
     chart_data = pd.DataFrame({
         "Category": ["Healthy", "Disease"],
         "Probability (%)": [healthy_prob, disease_prob],
@@ -140,20 +140,35 @@ if st.button("🔍 Predict"):
     )
     st.plotly_chart(fig, use_container_width=True)
 
-    # Display messages and recommendations
-    if disease_prob > 50:
-        st.error("⚠️ High chance of heart disease. Please consult a doctor.")
-
-        recs = get_recommendations(age, chol, trestbps, fbs, chest_pain, exang)
-
-        st.subheader("💊 Suggested Medicines (General)")
-        for med in recs["Medicine"]:
-            st.write(f"- {med}")
-
-        st.subheader("🏃 Suggested Exercises & Lifestyle")
-        for ex in recs["Exercise"]:
-            st.write(f"- {ex}")
-
+    # ----------------------
+    # Show risk messages
+    # ----------------------
+    if disease_prob < 30:
+        st.success("✅ Low risk! Keep up your healthy lifestyle.")
+    elif 30 <= disease_prob <= 50:
+        st.warning("⚠️ Moderate risk. Follow preventive measures and monitor health.")
     else:
-        st.success("✅ Low chance of heart disease. Keep maintaining a healthy lifestyle!")
+        st.error("🚨 High risk! Please consult a cardiologist immediately.")
+
+    # ----------------------
+    # Show recommendations ONLY if risk exists (>=30%)
+    # ----------------------
+    if disease_prob >= 30:
+        recs = get_recommendations(disease_prob, age, chol, trestbps, fbs, chest_pain, exang)
+
+        if recs["Medicine"]:
+            st.subheader("💊 Medicine Suggestions (General)")
+            for med in recs["Medicine"]:
+                st.write(f"- {med}")
+
+        if recs["Exercise"]:
+            st.subheader("🏃 Exercise Suggestions")
+            for ex in recs["Exercise"]:
+                st.write(f"- {ex}")
+
+        if recs["Lifestyle"]:
+            st.subheader("🥗 Lifestyle & Diet Tips")
+            for tip in recs["Lifestyle"]:
+                st.write(f"- {tip}")
+
 
