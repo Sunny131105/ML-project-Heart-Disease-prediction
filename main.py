@@ -2,7 +2,7 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import joblib
-import plotly.express as px  # ✅ for colored bars
+import plotly.express as px
 
 # ----------------------
 # Load trained model
@@ -14,7 +14,7 @@ model = joblib.load("heart_model.pkl")
 # ----------------------
 st.set_page_config(page_title="❤️ Heart Disease Prediction", layout="wide")
 st.title("❤️ Heart Disease Prediction App")
-st.markdown("Fill in the details below to predict the **chance of heart disease**.")
+st.markdown("Fill in the details below to predict the **chance of heart disease** and get personalized suggestions.")
 
 # ----------------------
 # Input fields
@@ -73,6 +73,44 @@ features = np.array([[
     thal_map[thal]
 ]])
 
+
+# ----------------------
+# Function to generate recommendations
+# ----------------------
+def get_recommendations(age, chol, trestbps, fbs, chest_pain, exang):
+    recommendations = {"Medicine": [], "Exercise": []}
+
+    # Blood Pressure related
+    if trestbps > 140:
+        recommendations["Medicine"].append("Blood pressure control medicines (e.g., ACE inhibitors, Beta-blockers)")
+        recommendations["Exercise"].append("Light yoga, daily walking (20–30 min), avoid heavy lifting")
+
+    # Cholesterol related
+    if chol > 240:
+        recommendations["Medicine"].append("Statins to lower cholesterol")
+        recommendations["Exercise"].append("Aerobic exercise like brisk walking, cycling, swimming")
+
+    # Diabetes risk (high fasting blood sugar)
+    if fbs > 120:
+        recommendations["Medicine"].append("Sugar control medicines (e.g., Metformin)")
+        recommendations["Exercise"].append("Daily 30 min brisk walk, strength training twice a week")
+
+    # Chest pain risk
+    if chest_pain in ["Typical Angina", "Atypical Angina"]:
+        recommendations["Medicine"].append("Nitroglycerin or other angina-relief medicines")
+        recommendations["Exercise"].append("Gentle exercises under medical supervision")
+
+    # Exercise induced angina
+    if exang == "Yes":
+        recommendations["Exercise"].append("Avoid intense workouts, prefer light walking and breathing exercises")
+
+    # Age-specific
+    if age > 60:
+        recommendations["Exercise"].append("Low impact exercises like tai chi, yoga, water aerobics")
+
+    return recommendations
+
+
 # ----------------------
 # Prediction
 # ----------------------
@@ -89,22 +127,33 @@ if st.button("🔍 Predict"):
     chart_data = pd.DataFrame({
         "Category": ["Healthy", "Disease"],
         "Probability (%)": [healthy_prob, disease_prob],
-        "Color": ["green", "red"]  # define colors
+        "Color": ["green", "red"]
     })
 
     fig = px.bar(
         chart_data,
         x="Category",
         y="Probability (%)",
-        color="Color",   # use the color column
+        color="Color",
         color_discrete_map={"green": "green", "red": "red"},
         height=300
     )
-    st.plotly_chart(fig, use_container_width=False)
+    st.plotly_chart(fig, use_container_width=True)
 
-    # Display messages
+    # Display messages and recommendations
     if disease_prob > 50:
         st.error("⚠️ High chance of heart disease. Please consult a doctor.")
+
+        recs = get_recommendations(age, chol, trestbps, fbs, chest_pain, exang)
+
+        st.subheader("💊 Suggested Medicines (General)")
+        for med in recs["Medicine"]:
+            st.write(f"- {med}")
+
+        st.subheader("🏃 Suggested Exercises & Lifestyle")
+        for ex in recs["Exercise"]:
+            st.write(f"- {ex}")
+
     else:
         st.success("✅ Low chance of heart disease. Keep maintaining a healthy lifestyle!")
 
