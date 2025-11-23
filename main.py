@@ -225,4 +225,51 @@ if st.button("🔍 Predict"):
         mime="text/html"
     )
 
+    # ---------------------------------------------
+    # DOCTOR DASHBOARD (Cardiology Specialists)
+    # ---------------------------------------------
+    st.markdown("---")
+    st.header("🩺 Meet Our Cardiologists")
 
+    doctors = [
+        {
+            "name": "Dr. Amit Mittal",
+            "degree": "MBBS, MD ,DM (Cardiology)",
+            "experience": "19+ Years Experience",
+            "phone": "+91 8069305511",
+            "email": "amit.mittal@cardiology.com",
+            "hospital": "Apollo Hospital, Delhi",
+            "image": "https://images.apollo247.in/doctors/5f02bdd3-b7ae-4a51-b1e0-ff2266b75f0f.jpg?tr=w-150,c-at_max,f-auto,q=80,dpr-2"
+        },
+        {
+            "name": "Dr. Noopur Goyal",
+            "degree": "M.D. Pediatrics, MBBS",
+            "experience": "9+ Years Experience",
+            "phone": "+91 8800447777",
+            "email": "noopur.goyal@cardiologist.com",
+            "hospital": "Yatharth Hospital, Greater Noida (Near pari Chock)",
+            "image": "https://www.yatharthhospitals.com/uploads/doctor/dr-noopur-goyal45829537.jpg"
+        },
+        {
+            "name": "Prof. Dr. Vivek Gupta",
+            "degree": "MD, DM, FESC, FEAPCI, FAPSIC,FCSI, FICC, FIC France, FIEIC, FSCAI",
+            "experience": "15+ Years Experience",
+            "phone": "+91 8069305511",
+            "email": "vivek.gupta@medilife.com",
+            "hospital": "Apollo Hospital, Delhi",
+            "image": "https://images.apollo247.in/doctors/f0c13537-efb6-452f-afef-32894abcb1cc-1738335734988.png?tr=w-150,c-at_max,f-auto,q=80,dpr-2"
+        }
+    ]
+
+    cols = st.columns(3)
+
+    for idx, doc in enumerate(doctors):
+        with cols[idx]:
+            st.image(doc["image"], width=220)
+            st.subheader(doc["name"])
+            st.write(f"**Degree:** {doc['degree']}")
+            st.write(f"**Experience:** {doc['experience']}")
+            st.write(f"**Hospital:** {doc['hospital']}")
+            st.write(f"**Phone:** {doc['phone']}")
+            st.write(f"**Email:** {doc['email']}")
+            st.markdown("---")
