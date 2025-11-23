@@ -4,11 +4,48 @@ import pandas as pd
 import joblib
 import plotly.express as px
 import tempfile
+import csv
+import os
+from datetime import datetime
+
+# ----------------------
+# (Optional) Path to uploaded notebook (provided in session)
+# ----------------------
+NOTEBOOK_PATH = "/mnt/data/Heart Disease Predictions.ipynb"
 
 # ----------------------
 # Load trained model
 # ----------------------
+# Make sure heart_model.pkl is in the same folder as this script or provide the path
 model = joblib.load("heart_model.pkl")
+
+# ----------------------
+# Helper: Log patient predictions for Admin Dashboard
+# ----------------------
+def log_patient_data(disease_prob, healthy_prob, user_data):
+    file_path = "patient_logs.csv"
+    file_exists = os.path.isfile(file_path)
+
+    with open(file_path, mode="a", newline='', encoding="utf-8") as file:
+        writer = csv.writer(file)
+
+        if not file_exists:
+            writer.writerow([
+                "Timestamp", "Age", "BP", "Cholesterol", "Sugar",
+                "HeartRate", "HealthyProb", "DiseaseProb"
+            ])
+
+        writer.writerow([
+            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            user_data["Age"],
+            user_data["Resting BP"],
+            user_data["Cholesterol"],
+            user_data["Fasting Sugar"],
+            user_data["Max Heart Rate"],
+            round(healthy_prob, 4),
+            round(disease_prob, 4)
+        ])
+
 
 # ----------------------
 # Streamlit UI
@@ -16,6 +53,10 @@ model = joblib.load("heart_model.pkl")
 st.set_page_config(page_title="❤️ Heart Disease Prediction", layout="wide")
 st.title("❤️ Heart Disease Prediction App")
 st.markdown("Fill in the details below to predict the **chance of heart disease** and get personalized suggestions.")
+
+# Provide link to uploaded notebook (developer-specified local path)
+st.sidebar.markdown("### Resources")
+st.sidebar.markdown(f"- Notebook: `{NOTEBOOK_PATH}`")
 
 # ----------------------
 # Input fields
@@ -134,7 +175,7 @@ def generate_html_report(disease_prob, healthy_prob, recs):
     return html
 
 # ----------------------
-# MAIN LOGIC
+# MAIN PREDICT BUTTON
 # ----------------------
 if st.button("🔍 Predict"):
     proba = model.predict_proba(features)[0]
@@ -144,6 +185,12 @@ if st.button("🔍 Predict"):
     st.subheader("📊 Prediction Result")
     st.write(f"**Chance of Heart Disease:** {disease_prob:.2f}%")
     st.write(f"**Chance of Being Healthy:** {healthy_prob:.2f}%")
+
+    # Log this prediction for admin analytics
+    try:
+        log_patient_data(disease_prob, healthy_prob, user_data)
+    except Exception as e:
+        st.warning(f"Could not log patient data: {e}")
 
     # ----------------------
     # Probability Chart
@@ -188,7 +235,7 @@ if st.button("🔍 Predict"):
     st.plotly_chart(fig2, use_container_width=True)
 
     # ----------------------
-    # Risk Messages
+    # Risk Messages & Recommendations
     # ----------------------
     recs = get_recommendations(disease_prob, age, chol, trestbps, fbs, chest_pain, exang)
 
@@ -199,9 +246,6 @@ if st.button("🔍 Predict"):
     else:
         st.error("🚨 High risk! Consult a cardiologist immediately.")
 
-    # ----------------------
-    # Recommendations
-    # ----------------------
     st.subheader("🩺 Recommendations")
     for section, items in recs.items():
         if items:
@@ -234,7 +278,7 @@ if st.button("🔍 Predict"):
     doctors = [
         {
             "name": "Dr. Amit Mittal",
-            "degree": "MBBS, MD ,DM (Cardiology)",
+            "degree": "MBBS, MD, DM (Cardiology)",
             "experience": "19+ Years Experience",
             "phone": "+91 8069305511",
             "email": "amit.mittal@cardiology.com",
@@ -247,12 +291,12 @@ if st.button("🔍 Predict"):
             "experience": "9+ Years Experience",
             "phone": "+91 8800447777",
             "email": "noopur.goyal@cardiologist.com",
-            "hospital": "Yatharth Hospital, Greater Noida (Near pari Chock)",
+            "hospital": "Yatharth Hospital, Greater Noida (Near Pari Chowk)",
             "image": "https://www.yatharthhospitals.com/uploads/doctor/dr-noopur-goyal45829537.jpg"
         },
         {
             "name": "Prof. Dr. Vivek Gupta",
-            "degree": "MD, DM, FESC, FEAPCI, FAPSIC,FCSI, FICC, FIC France, FIEIC, FSCAI",
+            "degree": "MD, DM, FESC, FSCAI, FICC",
             "experience": "15+ Years Experience",
             "phone": "+91 8069305511",
             "email": "vivek.gupta@medilife.com",
@@ -262,7 +306,6 @@ if st.button("🔍 Predict"):
     ]
 
     cols = st.columns(3)
-
     for idx, doc in enumerate(doctors):
         with cols[idx]:
             st.image(doc["image"], width=220)
@@ -273,3 +316,60 @@ if st.button("🔍 Predict"):
             st.write(f"**Phone:** {doc['phone']}")
             st.write(f"**Email:** {doc['email']}")
             st.markdown("---")
+
+# ----------------------
+# ADMIN DASHBOARD (Sidebar toggle)
+# ----------------------
+st.sidebar.markdown("---")
+admin_panel = st.sidebar.checkbox("🔐 Open Admin Dashboard")
+
+if admin_panel:
+    st.title("🏥 Admin Dashboard")
+
+    st.markdown("### 📌 Overview of App Usage")
+
+    if os.path.exists("patient_logs.csv"):
+        df = pd.read_csv("patient_logs.csv")
+
+        # Convert to numeric (in case)
+        df["DiseaseProb"] = pd.to_numeric(df["DiseaseProb"], errors="coerce")
+        df["HealthyProb"] = pd.to_numeric(df["HealthyProb"], errors="coerce")
+
+        # --- Stats ---
+        total_patients = len(df)
+        high_risk_count = len(df[df["DiseaseProb"] > 50])
+        moderate_risk = len(df[(df["DiseaseProb"] >= 30) & (df["DiseaseProb"] <= 50)])
+
+        colA, colB, colC = st.columns(3)
+        colA.metric("Total Patients Tested", total_patients)
+        colB.metric("High-Risk Patients", high_risk_count)
+        colC.metric("Moderate-Risk Patients", moderate_risk)
+
+        # --- Daily usage chart ---
+        df["Timestamp"] = pd.to_datetime(df["Timestamp"])
+        df["Date"] = df["Timestamp"].dt.date
+        usage = df.groupby("Date").size().reset_index(name="Count")
+
+        st.markdown("### 📅 Daily Usage Statistics")
+        fig_usage = px.line(usage, x="Date", y="Count", markers=True, title="Daily App Usage")
+        st.plotly_chart(fig_usage, use_container_width=True)
+
+        # --- Risk distribution ---
+        st.markdown("### ⚠️ Patient Risk Distribution")
+        fig_risk = px.histogram(df, x="DiseaseProb", nbins=20, title="Risk Score Distribution")
+        st.plotly_chart(fig_risk, use_container_width=True)
+
+        # --- Show raw logs ---
+        st.markdown("### 📄 Patient Log Records")
+        st.dataframe(df, use_container_width=True)
+
+        # --- Download CSV ---
+        st.download_button(
+            label="⬇ Download Patient Logs (CSV)",
+            data=df.to_csv(index=False),
+            file_name="patient_logs.csv",
+            mime="text/csv"
+        )
+
+    else:
+        st.warning("No patient data found. Run at least 1 prediction.")
