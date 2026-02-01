@@ -7,34 +7,59 @@ The Heart Disease Prediction App is an AI-powered system designed to predict the
 and an easy-to-use interface for users and healthcare professionals.
 
 🎯 Problem Statement :
+
 Heart disease causes millions of deaths globally every year.
+
 Early symptoms are often unnoticed or misunderstood.
+
 Medical test results are not interpreted on time.
+
 Many people lack access to quick, affordable risk assessment tools.
 
 🚀 Key Features :
+
 ✅ Heart Disease Risk Prediction (Normal vs Risk)
+
 📊 Interactive Dashboard
+
 🧠 Machine Learning–based Prediction
+
 🥗 Personalized Diet Suggestions
+
 🏃 Exercise Recommendations
+
 💊 Medication Guidance (informational)
+
 🌍 Lifestyle Improvement Tips
+
 🗣️ Local Language Support
+
 💰 Cost-Effective Solution
 
 🧪 Dataset :
+
 Source: UCI Heart Disease Dataset
+
 Type: Clinical and health-related parameters
+
 Usage: Model training, testing, and validation
 
 💻 Tech Stack :
+
 Programming Language: Python
+
 Framework: Streamlit
-Libraries: NumPy
-           Pandas
-           Scikit-learn
-           Joblib
+
+Libraries:
+
+NumPy
+
+Pandas
+
+Scikit-learn
+
+Joblib
+
 Deployment: Streamlit Cloud
 
 🔮 Future Scope :
