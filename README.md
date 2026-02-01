@@ -69,6 +69,10 @@ Insurance and health policy support
 
 Advanced analytics and insights
 
-🧾 Conclusion :
+ 🖇️Link : ⬇️
+
+  https://ml-project-heart-disease-prediction-twhs2vajebmxt63axanerm.streamlit.app/
+
+🧾 Conclusion : ⬇️
 
 The Heart Disease Prediction App is a powerful, accurate, and user-friendly machine learning solution for early detection of heart disease. With strong data preprocessing, intelligent feature engineering, a reliable ML model, and smooth deployment using Streamlit, this system is suitable for hospitals, screening centers, and digital health platforms.
