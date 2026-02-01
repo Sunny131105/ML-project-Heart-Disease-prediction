@@ -1,4 +1,4 @@
-❤️ Heart Disease Prediction App
+❤️ #Heart Disease Prediction App
 AI-Powered Heart Health Assistant
 
 📌 Project Overview :⬇️
