@@ -2,9 +2,10 @@
 AI-Powered Heart Health Assistant
 
 📌 Project Overview :
+
 Heart disease is one of the leading causes of death worldwide. Early detection is often challenging due to ignored symptoms, delayed medical tests, and lack of affordable screening tools.
-The Heart Disease Prediction App is an AI-powered system designed to predict the risk of heart disease at an early stage using patient health parameters. It provides personalized health recommendations
-and an easy-to-use interface for users and healthcare professionals.
+
+The Heart Disease Prediction App is an AI-powered system designed to predict the risk of heart disease at an early stage using patient health parameters. It provides personalized health recommendations and an easy-to-use interface for users and healthcare professionals.
 
 🎯 Problem Statement :
 
@@ -44,7 +45,7 @@ Type: Clinical and health-related parameters
 
 Usage: Model training, testing, and validation
 
-💻 Tech Stack :
+💻 Tech Stack : 
 
 Programming Language: Python
 
@@ -62,13 +63,20 @@ Joblib
 
 Deployment: Streamlit Cloud
 
-🔮 Future Scope :
+🔮 Future Scope :⬇️
+
 Integration with wearable devices
+
 Real-time health monitoring
+
 Doctor and hospital integration
+
 Mobile application development
+
 Insurance and health policy support
+
 Advanced analytics and insights
 
 🧾 Conclusion :
+
 The Heart Disease Prediction App is a powerful, accurate, and user-friendly machine learning solution for early detection of heart disease. With strong data preprocessing, intelligent feature engineering, a reliable ML model, and smooth deployment using Streamlit, this system is suitable for hospitals, screening centers, and digital health platforms.
