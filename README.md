@@ -19,23 +19,23 @@ Many people lack access to quick, affordable risk assessment tools.
 
 🚀 Key Features :⬇️
 
- Heart Disease Risk Prediction (Normal vs Risk)
+ ✅ Heart Disease Risk Prediction (Normal vs Risk)
 
- Interactive Dashboard
+📊 Interactive Dashboard
 
- Machine Learning–based Prediction
+🧠 Machine Learning–based Prediction
 
- Personalized Diet Suggestions
+🥗 Personalized Diet Suggestions
 
- Exercise Recommendations
+🏃 Exercise Recommendations
 
- Medication Guidance (informational)
+💊 Medication Guidance (informational)
 
- Lifestyle Improvement Tips
+🌍 Lifestyle Improvement Tips
 
- Local Language Support
+🗣️ Local Language Support
 
- Cost-Effective Solution
+💰 Cost-Effective Solution
 
 🧪 Dataset : ⬇️
 
