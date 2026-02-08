@@ -77,7 +77,7 @@ The application provides **visual insights** to make the prediction more interpr
   - Normal/ideal health values
 
     
-- 📈 Prediction Probability Visualization
+## 📈 Prediction Probability Visualization
 
 This bar chart visually represents the probability distribution between:
 
@@ -86,6 +86,7 @@ This bar chart visually represents the probability distribution between:
 🔴 Having Heart Disease
 
 
+<img width="1428" height="522" alt="Screenshot 2026-02-08 174838" src="https://github.com/user-attachments/assets/bddf110e-f8f7-4dab-bcaa-33689bc81f8f" />
 
 
 These graphs help users:
@@ -94,7 +95,7 @@ These graphs help users:
 - Make informed decisions based on visual data
 
 
-- 📊 Health Parameters vs Normal Ranges
+## 📊 Health Parameters vs Normal Ranges
 
 This comparative graph shows the user’s health values against normal medical ranges for key parameters such as:
 
@@ -116,11 +117,12 @@ Understand which parameters may contribute to higher risk
 
 Gain better awareness through visual comparison
 
-![Health vs Normal Ranges](screenshots/health_vs_normal.png)
+
+<img width="1448" height="496" alt="Screenshot 2026-02-08 174904" src="https://github.com/user-attachments/assets/3ceaa470-8de5-4292-a1d2-6258ba31ec4e" />
+
 
 
 ---
-
 
 
 ## 🖥️ Usage  
