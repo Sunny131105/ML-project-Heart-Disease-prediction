@@ -85,7 +85,7 @@ This bar chart visually represents the probability distribution between:
 
 🔴 Having Heart Disease
 
-![Prediction Result Graph](screenshots/prediction_result.png)
+![Prediction Result Graph]([screenshots/prediction_result.png](https://github.com/Sunny131105/ML-project-Heart-Disease-prediction/blob/main/Screenshot%202026-02-08%20174838.png))
 
 
 These graphs help users:
