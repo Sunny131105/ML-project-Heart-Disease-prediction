@@ -1,4 +1,11 @@
-# 🫀 Heart Disease Prediction
+
+<img width="1536" height="1024" alt="ChatGPT Image Feb 8, 2026, 08_43_25 PM" src="https://github.com/user-attachments/assets/76e4aeae-fdf6-449c-a53d-701d8b3c469a" />
+
+
+
+
+
+
 
 🔗 **Live Demo:** https://ml-project-heart-disease-prediction-twhs2vajebmxt63axanerm.streamlit.app/
 
